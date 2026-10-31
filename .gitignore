@@ -1,0 +1,7 @@
+node_modules/
+.wrangler/
+.dev.vars
+*.pem
+*.key
+*.pfx
+__pycache__/

@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "assetidprotocol",
+  "account_id": "0adfeaaccd1d2cfa389d7bcd33b55ee4",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true },
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  // R2 binding is disabled until the API token has R2 permissions and the bucket exists:
+  //   npx wrangler r2 bucket create asset-passport-files
+  // Then uncomment. Without it, masters <= 1 MB are stored in D1 (asset_blobs).
+  // "r2_buckets": [
+  //   { "binding": "ASSET_FILES", "bucket_name": "asset-passport-files" }
+  // ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "asset-registry",
+      "database_id": "82e7c4ad-753e-4e04-adf5-20e1b158e999",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "queues": {
+    "producers": [{ "binding": "NOTIFICATIONS", "queue": "asset-notifications" }],
+    "consumers": [{ "queue": "asset-notifications", "max_batch_size": 10, "max_batch_timeout": 5, "max_retries": 5 }]
+  },
+  "vars": {
+    "PUBLIC_BASE_URL": "https://assetidprotocol.message-0ad.workers.dev",
+    "NOTIFICATION_MODE": "webhook",
+    "MAX_UPLOAD_BYTES": "10000000",
+    "RATE_LIMIT_PER_MINUTE": "20"
+  }
+}

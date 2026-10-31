@@ -1,0 +1,26 @@
+{
+  "claim_generator": "asset-passport/0.1",
+  "title": "{{TITLE}}",
+  "format": "{{FORMAT}}",
+  "assertions": [
+    {
+      "label": "c2pa.actions",
+      "data": {
+        "actions": [
+          {
+            "action": "c2pa.created"
+          }
+        ]
+      }
+    },
+    {
+      "label": "com.assetpassport.registry",
+      "data": {
+        "asset_id": "{{ASSET_ID}}",
+        "watermark_id": "{{WATERMARK_ID}}",
+        "verification_url": "{{VERIFICATION_URL}}",
+        "license_url": "{{LICENSE_URL}}"
+      }
+    }
+  ]
+}
