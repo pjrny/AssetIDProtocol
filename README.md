@@ -7,6 +7,8 @@ serve license-gated downloads, identify copies, and notify creators via signed w
 - Worker: `assetidprotocol` - D1 `asset-registry` - Queue `asset-notifications` - R2 `asset-passport-files`
 - Phase 2 (visual recognition of screenshots/crops/camera photos) lands as a separate PR.
 
+Creator and operator guide: [docs/USER_GUIDE.md](docs/USER_GUIDE.md)
+
 ## API
 | Method | Path | Notes |
 |---|---|---|
