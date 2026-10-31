@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "assetidprotocol",
   "account_id": "0adfeaaccd1d2cfa389d7bcd33b55ee4",
-  "main": "src/index.ts",
+  "main": "src/main.ts",
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
   "preview_urls": false,
