@@ -5,7 +5,15 @@
 > If `RECOGNIZER_URL` or `RECOGNIZER_SECRET` is unset, registration works normally and
 > `/api/visual-identify` returns `503 {"available":false}`. The recognizer refuses every request
 > (503) when its own `RECOGNIZER_SECRET` is empty. Apply `migrations/0002_visual_features.sql`
-> with `npm run db:remote`. The original manual steps are kept below for reference.
+> with `npm run db:remote` (already applied to the remote `asset-registry`; additive).
+>
+> **Hosted recognizer:** the production recognizer is a separate pure-TypeScript Worker,
+> [`assetidprotocolrecognizer`](https://github.com/pjrny/AssetIDProtocolRecognizer), at
+> `https://assetidprotocolrecognizer.message-0ad.workers.dev` (pHash/dHash grid + HSV, model `ts-phash-grid-v1`).
+> It is configured as `RECOGNIZER_URL` in `wrangler.jsonc`, and `RECOGNIZER_SECRET` is set on both Workers.
+> The Python/OpenCV service in `recognizer/` remains the higher-accuracy (ORB) option for Containers or another host.
+> Feature models are not interchangeable; re-extract features if you switch recognizers.
+> The original manual steps are kept below for reference.
 
 This extension adds a visual recognizer for screenshots, crops, phone/webcam photos, and printed items.
 It uses complementary signals: pHash, dHash, HSV color histograms, and ORB local keypoints. ORB is the

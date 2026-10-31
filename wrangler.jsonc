@@ -30,6 +30,8 @@
     "PUBLIC_BASE_URL": "https://assetidprotocol.message-0ad.workers.dev",
     "NOTIFICATION_MODE": "webhook",
     "MAX_UPLOAD_BYTES": "10000000",
-    "RATE_LIMIT_PER_MINUTE": "20"
+    "RATE_LIMIT_PER_MINUTE": "20",
+    // Phase 2: secret RECOGNIZER_SECRET must match the recognizer Worker's secret.
+    "RECOGNIZER_URL": "https://assetidprotocolrecognizer.message-0ad.workers.dev"
   }
 }
