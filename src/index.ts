@@ -107,7 +107,8 @@ async function putMaster(env: Env, key: string, bytes: ArrayBuffer, type: string
 async function getMaster(env: Env, key: string): Promise<{ body: BodyInit; type: string; etag?: string } | null> {
   if (env.ASSET_FILES) {
     const obj = await env.ASSET_FILES.get(key);
-    return obj ? { body: obj.body, type: obj.httpMetadata?.contentType || "application/octet-stream", etag: obj.httpEtag } : null;
+    if (obj) return { body: obj.body, type: obj.httpMetadata?.contentType || "application/octet-stream", etag: obj.httpEtag };
+    // Legacy: masters stored in D1 before R2 was enabled.
   }
   const row = await env.DB.prepare("SELECT content_type,data FROM asset_blobs WHERE key=?").bind(key)
     .first<{ content_type: string; data: number[] | ArrayBuffer }>();
