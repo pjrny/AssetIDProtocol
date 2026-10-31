@@ -4,10 +4,11 @@
 serve license-gated downloads, identify copies, and notify creators via signed webhooks.
 
 - Live (Phase 1): https://assetidprotocol.message-0ad.workers.dev
-- Worker: `assetidprotocol` - D1 `asset-registry` - Queue `asset-notifications` - R2 `asset-passport-files` (pending)
 - Phase 2: visual recognition of screenshots, crops and camera photos (`/camera.html`, `POST /api/visual-identify`,
   hosted recognizer Worker [AssetIDProtocolRecognizer](https://github.com/pjrny/AssetIDProtocolRecognizer); OpenCV reference in `recognizer/`). Disabled until `RECOGNIZER_URL` (var) and `RECOGNIZER_SECRET` (secret) are set.
   See [INTEGRATION.md](INTEGRATION.md).
+
+Creator and operator guide: [docs/USER_GUIDE.md](docs/USER_GUIDE.md)
 
 ## API
 | Method | Path | Notes |
@@ -23,7 +24,7 @@ serve license-gated downloads, identify copies, and notify creators via signed w
 - Webhook URLs must be `https`, default port, a public hostname; private/reserved IPs and internal TLDs are rejected (checked at registration and before delivery; redirects are not followed).
 - Per-IP fixed-window rate limiting in D1 (`RATE_LIMIT_PER_MINUTE`, default 20).
 - Upload MIME allow-list with magic-byte sniffing, `MAX_UPLOAD_BYTES` (default 10 MB; 1 MB while the D1 fallback store is used).
-- **Storage:** until the R2 bucket is available, masters <= 1 MB are stored in D1 (`asset_blobs`). Enable R2 by creating the bucket and uncommenting `r2_buckets` in `wrangler.jsonc`.
+- **Storage:** masters are stored in R2. If the binding is removed, masters of 1 MB or less fall back to D1 (`asset_blobs`).
 
 ## Starter notes (original)
 

@@ -8,12 +8,10 @@
   "preview_urls": false,
   "observability": { "enabled": true },
   "assets": { "directory": "./public", "binding": "ASSETS" },
-  // R2 binding is disabled until the API token has R2 permissions and the bucket exists:
-  //   npx wrangler r2 bucket create asset-passport-files
-  // Then uncomment. Without it, masters <= 1 MB are stored in D1 (asset_blobs).
-  // "r2_buckets": [
-  //   { "binding": "ASSET_FILES", "bucket_name": "asset-passport-files" }
-  // ],
+  // Masters live in R2. If this binding is removed, the Worker falls back to D1 (asset_blobs, max 1 MB).
+  "r2_buckets": [
+    { "binding": "ASSET_FILES", "bucket_name": "asset-passport-files" }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
