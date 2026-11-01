@@ -100,3 +100,8 @@ that corpus rather than lowering it based on one image.
 - Add QR and robust forensic-watermark decoding before visual matching.
 - Add file-size/pixel limits, MIME validation, rate limits, authentication, audit retention, and privacy controls.
 - Do not report location more precisely than necessary; disclose camera upload and sighting retention.
+
+## Recognizer service binding & visual backfill
+
+- The main Worker reaches the recognizer through the `RECOGNIZER` **service binding** (`wrangler.jsonc` → `services`). A plain `fetch` to another `*.workers.dev` URL on the same account is blocked by Cloudflare, so `RECOGNIZER_URL` is only a fallback.
+- `POST /api/admin/backfill-visual` with `Authorization: Bearer <ADMIN_TOKEN>` extracts visual features for JPEG/PNG assets that have none (up to 25 per call; non-destructive). Unset `ADMIN_TOKEN` (`wrangler secret delete ADMIN_TOKEN`) to disable it.

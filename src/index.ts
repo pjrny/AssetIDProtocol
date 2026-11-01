@@ -12,6 +12,10 @@ export interface Env {
   /** Phase 2: optional visual recognizer service (HTTPS). Unset = feature disabled. */
   RECOGNIZER_URL?: string;
   RECOGNIZER_SECRET?: string;
+  /** Service binding to the recognizer Worker (preferred: same-account workers.dev fetches are blocked). */
+  RECOGNIZER?: Fetcher;
+  /** Secret bearer token for /api/admin/* maintenance routes (unset = routes disabled). */
+  ADMIN_TOKEN?: string;
 }
 
 export type NotifyMessage = { creatorId: string; eventType: string; assetId: string; payload: unknown };
@@ -107,7 +111,7 @@ async function putMaster(env: Env, key: string, bytes: ArrayBuffer, type: string
       .bind(key, type, bytes, now()).run();
   }
 }
-async function getMaster(env: Env, key: string): Promise<{ body: BodyInit; type: string; etag?: string } | null> {
+export async function getMaster(env: Env, key: string): Promise<{ body: BodyInit; type: string; etag?: string } | null> {
   if (env.ASSET_FILES) {
     const obj = await env.ASSET_FILES.get(key);
     if (obj) return { body: obj.body, type: obj.httpMetadata?.contentType || "application/octet-stream", etag: obj.httpEtag };

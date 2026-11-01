@@ -1,15 +1,17 @@
-import { type Env, json, rateLimit, tooMany, validateImage, maxUpload, recordSighting } from "./index";
+import { type Env, json, rateLimit, tooMany, validateImage, maxUpload, recordSighting, getMaster, type ExtraRoute } from "./index";
 
 export type VisualFeatureRow = { asset_id: string; feature_json: string };
 const TIMEOUT_MS = 15_000;
 
 /** The recognizer is optional: without both URL and secret, visual features are disabled (never a 500). */
 export function recognizerConfigured(env: Env) {
-  return Boolean(env.RECOGNIZER_URL && env.RECOGNIZER_SECRET);
+  return Boolean((env.RECOGNIZER || env.RECOGNIZER_URL) && env.RECOGNIZER_SECRET);
 }
 
 async function callRecognizer(env: Env, path: string, fd: FormData) {
-  const r = await fetch(`${env.RECOGNIZER_URL!.replace(/\/$/, "")}${path}`, {
+  const base = (env.RECOGNIZER_URL || "https://recognizer.internal").replace(/\/$/, "");
+  const doFetch = env.RECOGNIZER ? env.RECOGNIZER.fetch.bind(env.RECOGNIZER) : fetch;
+  const r = await doFetch(`${base}${path}`, {
     method: "POST",
     headers: { "x-service-secret": env.RECOGNIZER_SECRET! },
     body: fd,
@@ -66,3 +68,31 @@ export async function visualIdentifyRoute(request: Request, env: Env, u: URL): P
   }
   return json(out, out.matched ? 200 : 404);
 }
+
+async function timingSafeEq(a: string, b: string) {
+  const enc = new TextEncoder();
+  const [x, y] = await Promise.all([crypto.subtle.digest("SHA-256", enc.encode(a)), crypto.subtle.digest("SHA-256", enc.encode(b))]);
+  const p = new Uint8Array(x), q = new Uint8Array(y); let d = 0;
+  for (let i = 0; i < p.length; i++) d |= p[i] ^ q[i];
+  return d === 0;
+}
+
+/** POST /api/admin/backfill-visual: non-destructively extract features for assets registered before Phase 2. */
+export const backfillVisualRoute: ExtraRoute = async (request, env, url) => {
+  if (url.pathname !== "/api/admin/backfill-visual") return null;
+  if (request.method !== "POST") return json({ error: "method not allowed" }, 405);
+  const auth = request.headers.get("authorization") || "";
+  if (!env.ADMIN_TOKEN || !(await timingSafeEq(auth, `Bearer ${env.ADMIN_TOKEN}`))) return json({ error: "unauthorized" }, 401);
+  if (!recognizerConfigured(env)) return json({ error: "recognizer not configured" }, 503);
+  const rows = await env.DB.prepare(`SELECT a.id, a.r2_key, a.mime_type FROM assets a LEFT JOIN visual_features v ON v.asset_id = a.id
+    WHERE v.asset_id IS NULL AND a.mime_type IN ('image/jpeg','image/png') LIMIT 25`).all<{ id: string; r2_key: string; mime_type: string }>();
+  const results: Record<string, string> = {};
+  for (const a of rows.results) {
+    const m = await getMaster(env, a.r2_key);
+    if (!m) { results[a.id] = "missing master"; continue; }
+    const buf = await new Response(m.body).arrayBuffer();
+    const r = await extractAndStore(a.id, new File([buf], a.r2_key.split("/").pop() || "master", { type: a.mime_type }), env);
+    results[a.id] = r.visualFeatures;
+  }
+  return json({ processed: rows.results.length, results });
+};

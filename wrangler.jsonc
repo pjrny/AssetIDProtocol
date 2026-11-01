@@ -12,6 +12,10 @@
   "r2_buckets": [
     { "binding": "ASSET_FILES", "bucket_name": "asset-passport-files" }
   ],
+  // Phase 2: call the recognizer through a service binding (RECOGNIZER_URL is the fallback / documentation).
+  "services": [
+    { "binding": "RECOGNIZER", "service": "assetidprotocolrecognizer" }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
