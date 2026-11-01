@@ -5,7 +5,9 @@ serve license-gated downloads, identify copies, and notify creators via signed w
 
 - Live (Phase 1): https://assetidprotocol.message-0ad.workers.dev
 - Worker: `assetidprotocol` - D1 `asset-registry` - Queue `asset-notifications` - R2 `asset-passport-files`
-- Phase 2 (visual recognition of screenshots/crops/camera photos) lands as a separate PR.
+- Phase 2: visual recognition of screenshots, crops and camera photos (`/camera.html`, `POST /api/visual-identify`,
+  hosted recognizer Worker [AssetIDProtocolRecognizer](https://github.com/pjrny/AssetIDProtocolRecognizer); OpenCV reference in `recognizer/`). Disabled until `RECOGNIZER_URL` (var) and `RECOGNIZER_SECRET` (secret) are set.
+  See [INTEGRATION.md](INTEGRATION.md).
 
 Creator and operator guide: [docs/USER_GUIDE.md](docs/USER_GUIDE.md)
 

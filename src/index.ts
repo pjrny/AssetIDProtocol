@@ -9,6 +9,9 @@ export interface Env {
   NOTIFICATION_WEBHOOK_SECRET?: string;
   MAX_UPLOAD_BYTES?: string;
   RATE_LIMIT_PER_MINUTE?: string;
+  /** Phase 2: optional visual recognizer service (HTTPS). Unset = feature disabled. */
+  RECOGNIZER_URL?: string;
+  RECOGNIZER_SECRET?: string;
 }
 
 export type NotifyMessage = { creatorId: string; eventType: string; assetId: string; payload: unknown };
@@ -93,7 +96,7 @@ export async function rateLimit(request: Request, env: Env, bucket: string) {
   if (Math.random() < 0.02) await env.DB.prepare("DELETE FROM rate_limits WHERE window < ?").bind(window - 5).run();
   return (row?.count ?? 0) <= limit;
 }
-const tooMany = () => json({ error: "rate limit exceeded; try again in a minute" }, 429, { "retry-after": "60" });
+export const tooMany = () => json({ error: "rate limit exceeded; try again in a minute" }, 429, { "retry-after": "60" });
 
 // ---------- storage ----------
 async function putMaster(env: Env, key: string, bytes: ArrayBuffer, type: string, meta: Record<string, string>) {

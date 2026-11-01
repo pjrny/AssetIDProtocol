@@ -85,7 +85,7 @@ curl -F watermarkId=<id-from-extract> https://assetidprotocol.message-0ad.worker
 A match returns `{ matched: true, assetId, method, verificationUrl }`, logs a sighting, and notifies the creator.
 The file must be byte-identical. Any re-save or screenshot changes the hash, so use (b) for those.
 
-**b) Camera / screenshot / crop: coming in Phase 2** ([PR #1](https://github.com/pjrny/AssetIDProtocol/pull/1)).
+**b) Camera / screenshot / crop** (Phase 2):
 Open `/camera.html`, point your camera at the image (or upload a screenshot), and press **Capture**.
 Matching uses perceptual hashes, so it handles resizes, screenshots and crops that keep about 50% or more of the
 image. It is weak on steep angles, rotation and glare. Only assets registered after Phase 2 is deployed (or

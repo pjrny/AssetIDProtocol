@@ -40,3 +40,12 @@ CREATE INDEX IF NOT EXISTS idx_rate_limits_window ON rate_limits(window);
 CREATE TABLE IF NOT EXISTS asset_blobs (
   key TEXT PRIMARY KEY, content_type TEXT NOT NULL, data BLOB NOT NULL, created_at TEXT NOT NULL
 );
+
+-- Phase 2: visual recognition features
+CREATE TABLE IF NOT EXISTS visual_features (
+  asset_id TEXT PRIMARY KEY,
+  feature_json TEXT NOT NULL,
+  model_version TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY(asset_id) REFERENCES assets(id)
+);
